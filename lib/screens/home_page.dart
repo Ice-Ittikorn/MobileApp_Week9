@@ -4,6 +4,7 @@ import '../models/item.dart';
 import '../models/cart_model.dart';
 import '../repositories/item_repository.dart';
 import '../repositories/favorites_repository.dart';
+import '../services/auth_service.dart';
 import '../services/gemini_service.dart';
 import 'checkout_page.dart';
 
@@ -47,6 +48,20 @@ class _HomePageState extends State<HomePage> {
       messenger
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text('เพิ่มรายการโปรดไม่สำเร็จ: $e')));
+    }
+  }
+
+  Future<void> _signOut() async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      // AuthGate ฟัง authStateChanges() อยู่ จะสลับกลับไปหน้า Login ให้เอง
+      await AuthService().signOut();
+    } catch (e) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        );
     }
   }
 
@@ -107,6 +122,11 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(builder: (_) => const CheckoutPage()),
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'ออกจากระบบ',
+            onPressed: _signOut,
           ),
         ],
       ),
