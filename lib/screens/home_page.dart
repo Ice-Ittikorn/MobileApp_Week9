@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/item.dart';
 import '../models/cart_model.dart';
 import '../repositories/item_repository.dart';
 import '../repositories/favorites_repository.dart';
-import '../repositories/item_repository_firestore.dart';
 import '../services/auth_service.dart';
 import '../services/gemini_service.dart';
 import 'checkout_page.dart';
@@ -76,68 +74,6 @@ class _HomePageState extends State<HomePage> {
       messenger
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text('เพิ่มรายการโปรดไม่สำเร็จ: $e')));
-    }
-  }
-
-  // ชั่วคราว: จำลองการโพสต์ขายจริง 2 รายการ เพื่อดู Badge 🎓 บนหน้า Home
-  // ลบทิ้งเมื่อทำ 6.3 (ปุ่ม "โพสต์ขายจริง") เสร็จแล้ว
-  Future<void> _seedTestItems() async {
-    final messenger = ScaffoldMessenger.of(context);
-    final user = FirebaseAuth.instance.currentUser;
-    final repo = widget.repositories.whereType<ItemRepositoryFirestore>().firstOrNull;
-    if (user == null || repo == null) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('ต้องล็อกอินก่อน และต้องมี ItemRepositoryFirestore')),
-      );
-      return;
-    }
-    try {
-      const samples = [
-        ('หนังสือแคลคูลัส 1 มือสอง', 150.0, 'หนังสือเรียน'),
-        ('เครื่องคิดเลข Casio fx-991', 450.0, 'อุปกรณ์การเรียน'),
-        ('หนังสือฟิสิกส์ทั่วไป เล่ม 1', 180.0, 'หนังสือเรียน'),
-        ('หนังสือโครงสร้างข้อมูลและอัลกอริทึม', 220.0, 'หนังสือเรียน'),
-        ('สมุดโน้ตปกแข็ง A4 สภาพใหม่', 60.0, 'อุปกรณ์การเรียน'),
-        ('ชุดปากกาเน้นข้อความ 6 สี', 45.0, 'อุปกรณ์การเรียน'),
-        ('โคมไฟตั้งโต๊ะ LED ถนอมสายตา', 250.0, 'ของใช้ในหอ'),
-        ('พัดลมตั้งโต๊ะ USB', 199.0, 'ของใช้ในหอ'),
-        ('กระเป๋าเป้ใส่โน้ตบุ๊ก 15 นิ้ว', 390.0, 'กระเป๋า'),
-        ('แฟลชไดรฟ์ 64GB Kingston', 150.0, 'อิเล็กทรอนิกส์'),
-        ('หูฟังบลูทูธ มือสอง', 350.0, 'อิเล็กทรอนิกส์'),
-        ('เมาส์ไร้สาย Logitech', 280.0, 'อิเล็กทรอนิกส์'),
-        ('จักรยานพับ มือสอง', 2500.0, 'ยานพาหนะ'),
-        ('เสื้อช็อปวิศวะ ไซส์ M', 300.0, 'เสื้อผ้า'),
-        ('ชุดเครื่องเขียนเขียนแบบ ครบเซ็ต', 520.0, 'อุปกรณ์การเรียน'),
-      ];
-
-      // ข้ามรายการที่มีชื่อซ้ำใน Firestore แล้ว กันกดซ้ำแล้วได้เอกสารซ้ำ
-      final existing = (await repo.getItems()).map((e) => e.title).toSet();
-      var added = 0;
-      for (final (title, price, category) in samples) {
-        if (existing.contains(title)) continue;
-        await repo.postItem(
-          Item(
-            id: 0,
-            title: title,
-            price: price,
-            description: 'สินค้าทดสอบ (จำลอง)',
-            category: category,
-            imageUrl: 'https://picsum.photos/seed/${Uri.encodeComponent(title)}/200',
-            sellerId: user.uid,
-          ),
-        );
-        added++;
-      }
-      messenger.showSnackBar(
-        SnackBar(content: Text('เพิ่มสินค้าทดสอบ $added รายการแล้ว')),
-      );
-      setState(() {
-        _itemsFuture = _loadItems();
-      });
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-      );
     }
   }
 
@@ -212,12 +148,6 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(builder: (_) => const CheckoutPage()),
             ),
-          ),
-          // ปุ่มทดสอบชั่วคราว: จำลองโพสต์ขายจริง (ลบทิ้งหลังทำ 6.3)
-          IconButton(
-            icon: const Icon(Icons.science),
-            tooltip: 'จำลองโพสต์ขาย (ทดสอบ)',
-            onPressed: _seedTestItems,
           ),
           IconButton(
             icon: const Icon(Icons.logout),
