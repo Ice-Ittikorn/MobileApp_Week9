@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/item_image.dart';
 import 'package:provider/provider.dart';
 import '../models/cart_model.dart';
 
@@ -21,14 +22,7 @@ class CheckoutPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final item = cart.items[index];
                       return ListTile(
-                        leading: Image.network(
-                          item.imageUrl,
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.broken_image),
-                        ),
+                        leading: ItemImage(imageUrl: item.imageUrl),
                         title: Text(item.title),
                         subtitle: Text('${item.price} บาท'),
                         trailing: IconButton(

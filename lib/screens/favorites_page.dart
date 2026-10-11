@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/item_image.dart';
 import '../database/app_database.dart';
 import '../repositories/favorites_repository.dart';
 
@@ -66,14 +67,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             itemBuilder: (context, index) {
               final fav = favorites[index];
               return ListTile(
-                leading: Image.network(
-                  fav.imageUrl,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image),
-                ),
+                leading: ItemImage(imageUrl: fav.imageUrl),
                 title: Text(fav.title),
                 subtitle: Text('${fav.price} บาท'),
                 trailing: IconButton(

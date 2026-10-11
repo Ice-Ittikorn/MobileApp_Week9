@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/item_image.dart';
 import 'package:provider/provider.dart';
 import '../models/item.dart';
 import '../models/cart_model.dart';
@@ -174,14 +175,7 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               final item = items[index];
               return ListTile(
-                leading: Image.network(
-                  item.imageUrl,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image),
-                ),
+                leading: ItemImage(imageUrl: item.imageUrl),
                 title: Text(item.title),
                 subtitle: Text(
                   '${item.isStudentPost ? '🎓 โพสต์โดยนักศึกษา' : '🏪 จาก API'}'
