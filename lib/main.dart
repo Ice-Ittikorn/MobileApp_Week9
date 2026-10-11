@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -7,9 +8,11 @@ import 'screens/main_scaffold.dart';
 import 'repositories/item_repository_api.dart';
 import 'repositories/favorites_repository_drift.dart';
 import 'repositories/listing_draft_repository_drift.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dotenv.load(fileName: '.env');
 
   // สร้าง AppDatabase ครั้งเดียว แล้วส่งต่อผ่าน Constructor
