@@ -15,7 +15,9 @@ class GeminiService {
       throw Exception('ยังไม่ได้ตั้งค่า GEMINI_API_KEY ในไฟล์ .env');
     }
 
-    final uri = Uri.parse('$_baseUrl/$_model:generateContent');
+    // key รูปแบบ AQ.xxx ใช้ผ่าน query parameter ?key= (ส่งเป็น header x-goog-api-key แล้วได้ 401)
+    final uri = Uri.parse('$_baseUrl/$_model:generateContent')
+        .replace(queryParameters: {'key': _apiKey});
 
     try {
       final response = await http
@@ -23,7 +25,6 @@ class GeminiService {
             uri,
             headers: {
               'Content-Type': 'application/json',
-              'x-goog-api-key': _apiKey,
             },
             body: jsonEncode({
               'contents': [
