@@ -26,17 +26,11 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -66,6 +60,14 @@ class DefaultFirebaseOptions {
         iosBundleId: _env('FIREBASE_IOS_BUNDLE_ID'),
       );
 
+  static FirebaseOptions get android => FirebaseOptions(
+        apiKey: _env('FIREBASE_ANDROID_API_KEY'),
+        appId: _env('FIREBASE_ANDROID_APP_ID'),
+        messagingSenderId: _env('FIREBASE_MESSAGING_SENDER_ID'),
+        projectId: _env('FIREBASE_PROJECT_ID'),
+        storageBucket: _env('FIREBASE_STORAGE_BUCKET'),
+      );
+
   static String _env(String key) {
     final value = dotenv.env[key];
     if (value == null || value.isEmpty) {
@@ -73,4 +75,5 @@ class DefaultFirebaseOptions {
     }
     return value;
   }
+
 }

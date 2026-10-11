@@ -34,17 +34,23 @@ class _LoginPageState extends State<LoginPage> {
       _errorMessage = null;
     });
 
+    // เก็บ messenger ไว้ก่อน await เพื่อให้แสดง SnackBar ได้
+    // แม้ AuthGate จะสลับหน้าจอไปแล้วหลังล็อกอินสำเร็จ
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       if (_isLoginMode) {
         await _authService.signIn(
           email: _emailController.text,
           password: _passwordController.text,
         );
+        _showSuccess(messenger, 'เข้าสู่ระบบสำเร็จแล้ว');
       } else {
         await _authService.signUp(
           email: _emailController.text,
           password: _passwordController.text,
         );
+        _showSuccess(messenger, 'สมัครสมาชิกและเข้าสู่ระบบสำเร็จแล้ว');
       }
       // ไม่ต้อง Navigator ใด ๆ — AuthGate (ส่วนที่ 4) จะสลับหน้าจอให้เอง
     } catch (e) {
@@ -60,6 +66,52 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await _authService.signInWithGoogle();
+      _showSuccess(messenger, 'เข้าสู่ระบบด้วย Google สำเร็จแล้ว');
+      // ไม่ต้อง Navigator.push ใด ๆ ที่นี่ — AuthGate ในส่วนที่ 4
+      // จะตรวจพบสถานะล็อกอินใหม่จาก authStateChanges() แล้วสลับหน้าจอให้เอง
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showSuccess(ScaffoldMessengerState messenger, String message) {
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(child: Text(message)),
+            ],
+          ),
+          backgroundColor: Colors.green.shade700,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
   }
 
   void _toggleMode() {
@@ -162,6 +214,26 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(_isLoginMode
                       ? 'ยังไม่มีบัญชี? สมัครสมาชิก'
                       : 'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ'),
+                ),
+                const SizedBox(height: 16),
+                const Row(
+                  children: [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('หรือ'),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: _isLoading ? null : _signInWithGoogle,
+                  icon: const Icon(Icons.g_mobiledata, size: 28),
+                  label: const Text('เข้าสู่ระบบด้วย Google'),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                  ),
                 ),
               ],
             ),
