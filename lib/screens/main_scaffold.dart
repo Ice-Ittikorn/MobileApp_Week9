@@ -23,12 +23,14 @@ class MainScaffold extends StatefulWidget {
 
 class _MainScaffoldState extends State<MainScaffold> {
   int _selectedIndex = 0;
+  int _homeVersion = 0; // เปลี่ยนค่าทุกครั้งที่กลับมาแท็บหน้าหลัก เพื่อโหลดสินค้าใหม่ (เช่น หลังโพสต์ขาย)
   int _favoritesVersion = 0; // เปลี่ยนค่าทุกครั้งที่เปิด Tab รายการโปรด เพื่อให้โหลดข้อมูลใหม่
 
   @override
   Widget build(BuildContext context) {
     final pages = [
       HomePage(
+        key: ValueKey(_homeVersion),
         repositories: widget.itemRepositories,
         favoritesRepository: widget.favoritesRepository,
       ),
@@ -44,6 +46,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() {
+          if (index == 0 && _selectedIndex != 0) _homeVersion++;
           _selectedIndex = index;
           if (index == 2) _favoritesVersion++;
         }),

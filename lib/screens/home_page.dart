@@ -57,6 +57,19 @@ class _HomePageState extends State<HomePage> {
     return results.expand((list) => list).toList();
   }
 
+  // ดึงสินค้าใหม่ (ใช้กับการดึงลงเพื่อรีเฟรช)
+  Future<void> _refresh() async {
+    final future = _loadItems();
+    setState(() {
+      _itemsFuture = future;
+    });
+    try {
+      await future;
+    } catch (_) {
+      // error แสดงผ่าน FutureBuilder อยู่แล้ว
+    }
+  }
+
   Future<void> _addFavorite(Item item) async {
     final messenger = ScaffoldMessenger.of(context);
     try {
@@ -204,7 +217,8 @@ class _HomePageState extends State<HomePage> {
               );
             },
           );
-          if (_sourceWarning == null) return list;
+          final refreshable = RefreshIndicator(onRefresh: _refresh, child: list);
+          if (_sourceWarning == null) return refreshable;
           return Column(
             children: [
               MaterialBanner(
@@ -219,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              Expanded(child: list),
+              Expanded(child: refreshable),
             ],
           );
         },
