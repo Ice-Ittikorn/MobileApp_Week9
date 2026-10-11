@@ -9,11 +9,11 @@ import '../services/gemini_service.dart';
 import 'checkout_page.dart';
 
 class HomePage extends StatefulWidget {
-  final ItemRepository repository;
+  final List<ItemRepository> repositories;
   final FavoritesRepository favoritesRepository;
   const HomePage({
     super.key,
-    required this.repository,
+    required this.repositories,
     required this.favoritesRepository,
   });
 
@@ -27,7 +27,27 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _itemsFuture = widget.repository.getItems();
+    _itemsFuture = _loadItems();
+  }
+
+  // เรียก getItems() จากทุก Repository พร้อมกัน แล้วรวมเป็น List เดียว
+  // ถ้าบางแหล่งล้มเหลว ยังแสดงผลจากแหล่งที่เหลือได้ (แสดง Error เฉพาะเมื่อล้มทั้งหมด)
+  Future<List<Item>> _loadItems() async {
+    final errors = <Object>[];
+    final results = await Future.wait(
+      widget.repositories.map((repo) async {
+        try {
+          return await repo.getItems();
+        } catch (e) {
+          errors.add(e);
+          return <Item>[];
+        }
+      }),
+    );
+    if (errors.length == widget.repositories.length && errors.isNotEmpty) {
+      throw errors.first;
+    }
+    return results.expand((list) => list).toList();
   }
 
   Future<void> _addFavorite(Item item) async {
@@ -157,7 +177,10 @@ class _HomePageState extends State<HomePage> {
                       const Icon(Icons.broken_image),
                 ),
                 title: Text(item.title),
-                subtitle: Text('${item.price} บาท'),
+                subtitle: Text(
+                  '${item.isStudentPost ? '🎓 โพสต์โดยนักศึกษา' : '🏪 จาก API'}'
+                  ' · ${item.price} บาท',
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

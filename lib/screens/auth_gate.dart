@@ -38,7 +38,7 @@ class AuthGate extends StatelessWidget {
 
         // สถานะที่ 3: มีผลเป็น User จริง → ล็อกอินแล้ว
         return MainScaffold(
-          itemRepository: itemRepositories.first, // ชั่วคราว — เปลี่ยนเป็น itemRepositories ในขั้นตอน 5.3
+          itemRepositories: itemRepositories,
           favoritesRepository: favoritesRepository,
           draftRepository: draftRepository,
         );

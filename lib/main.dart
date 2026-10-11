@@ -6,6 +6,7 @@ import 'database/app_database.dart';
 import 'models/cart_model.dart';
 import 'screens/auth_gate.dart';
 import 'repositories/item_repository_api.dart';
+import 'repositories/item_repository_firestore.dart';
 import 'repositories/favorites_repository_drift.dart';
 import 'repositories/listing_draft_repository_drift.dart';
 import 'firebase_options.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       title: 'Campus Marketplace',
       debugShowCheckedModeBanner: false,
       home: AuthGate(
-        itemRepositories: [ItemRepositoryApi()], // เพิ่ม ItemRepositoryFirestore() ทีหลังขั้นตอน 6.2
+        itemRepositories: [ItemRepositoryApi(), ItemRepositoryFirestore()],
         favoritesRepository: FavoritesRepositoryDrift(db),
         draftRepository: ListingDraftRepositoryDrift(db),
       ),
