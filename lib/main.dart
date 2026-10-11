@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'database/app_database.dart';
 import 'models/cart_model.dart';
 import 'screens/main_scaffold.dart';
+import 'screens/login_page.dart';
 import 'repositories/item_repository_api.dart';
 import 'repositories/favorites_repository_drift.dart';
 import 'repositories/listing_draft_repository_drift.dart';
@@ -35,11 +36,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Campus Marketplace',
       debugShowCheckedModeBanner: false,
-      home: MainScaffold(
-        itemRepository: ItemRepositoryApi(),
-        favoritesRepository: FavoritesRepositoryDrift(db),
-        draftRepository: ListingDraftRepositoryDrift(db),
-      ),
+      // ชั่วคราวเพื่อทดสอบ LoginPage — เปลี่ยนกลับก่อนเริ่มส่วนที่ 4 (AuthGate)
+      home: const LoginPage(),
+      // home: MainScaffold(
+      //   itemRepository: ItemRepositoryApi(),
+      //   favoritesRepository: FavoritesRepositoryDrift(db),
+      //   draftRepository: ListingDraftRepositoryDrift(db),
+      // ),
     );
   }
 }
