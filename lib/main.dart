@@ -13,8 +13,8 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dotenv.load(fileName: '.env');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // สร้าง AppDatabase ครั้งเดียว แล้วส่งต่อผ่าน Constructor
   final db = AppDatabase();
